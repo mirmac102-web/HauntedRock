@@ -1,0 +1,11 @@
+User (M1rMak): Hi
+rock.ai: Hey! What's up? How can I help you today?
+---
+User (M1rMak): Send me random numbers
+rock.ai: Here are some random numbers for you:
+
+**7, 42, 19, 88, 3, 55, 91, 26, 73, 14**
+---
+User (M1rMak): Tell me random NF Song
+rock.ai: Here’s a random NF song for you: **"Let You Down"** from his album *Perception*. It’s one of his most popular tracks, known for its emotional depth and raw lyrics. Give it a listen if you haven’t already! 🎧
+---

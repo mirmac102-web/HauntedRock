@@ -1,0 +1,12 @@
+[
+  {
+    "role": "user",
+    "content": "Приветик!",
+    "timestamp": "2026-02-17T14:14:40.677Z"
+  },
+  {
+    "role": "assistant",
+    "content": "Привет! Rock 'n' roll vibes all the way! What's up?",
+    "timestamp": "2026-02-17T14:14:40.677Z"
+  }
+]

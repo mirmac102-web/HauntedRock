@@ -1,0 +1,12 @@
+[
+  {
+    "role": "user",
+    "content": "Heyf",
+    "timestamp": "2026-02-17T14:12:10.074Z"
+  },
+  {
+    "role": "assistant",
+    "content": "Hey there! Welcome to Haunted Rock. Did you mean to say \"hey\"? What's on your mind - classic rock, road trips, or both?",
+    "timestamp": "2026-02-17T14:12:10.074Z"
+  }
+]

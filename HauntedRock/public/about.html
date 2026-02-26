@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Haunted Rock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            --primary-blue: rgb(56, 122, 255); 
+            --dark-text: #1d1d1f;
+            --gray-text: #86868b;
+            --fixer-purple: #8e2de2;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e8ecf2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            --blur: blur(20px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Lexend', sans-serif; background: var(--bg-gradient); 
+            color: var(--dark-text); line-height: 1.6; font-weight: 300; min-height: 100vh;
+            overflow-x: hidden; position: relative;
+        }
+
+        /* Декоративные круги на фоне для эффекта стекла */
+        .bg-blob { position: fixed; border-radius: 50%; filter: blur(60px); z-index: -1; opacity: 0.5; }
+        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: rgba(56, 122, 255, 0.3); }
+        .blob-2 { bottom: -10%; right: -5%; width: 500px; height: 500px; background: rgba(142, 45, 226, 0.2); }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        /* HEADER */
+        header { 
+            background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            padding: 15px 0; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
+        }
+        .nav-container { max-width: 1240px; margin: 0 auto; padding: 0 25px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .logo-img { width: 42px; height: 42px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--dark-text); letter-spacing: -0.5px; text-transform: lowercase; }
+        .logo-text span { color: var(--primary-blue); margin: 0 1px; }
+
+        nav ul { display: flex; list-style: none; gap: 25px; align-items: center;}
+        nav a { font-weight: 500; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-text); padding: 5px 10px; border-radius: 8px;}
+        nav a:hover { color: var(--primary-blue); background: rgba(255,255,255,0.5); }
+        nav a.active { color: var(--primary-blue); font-weight: 700; background: rgba(255,255,255,0.8); box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .icon-btn { font-size: 1.4rem; cursor: pointer; transition: 0.2s; display: flex; color: var(--dark-text); background: none; border: none; font-family: inherit;}
+        .icon-btn:hover { color: var(--primary-blue); transform: scale(1.1); }
+        
+        .profile-wrapper { width: 45px; height: 45px; border-radius: 50%; padding: 2px; border: 2px solid transparent; transition: 0.3s; cursor: pointer; position: relative; }
+        .profile-wrapper:hover { border-color: var(--primary-blue); }
+        .profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff;}
+
+        /* MAIN LAYOUT */
+        .main-layout { max-width: 1000px; margin: 60px auto; padding: 0 25px; animation: fadeIn 0.5s ease-out; }
+        .page-title { font-size: 3rem; font-weight: 800; text-align: center; margin-bottom: 50px; letter-spacing: -1.5px; color: var(--dark-text); text-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); 
+            border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 30px; 
+            box-shadow: var(--shadow); padding: 40px; margin-bottom: 50px; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-panel:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); background: rgba(255, 255, 255, 0.6); }
+
+        .creator-card { display: flex; gap: 50px; align-items: center; }
+        .creator-image-wrapper { 
+            flex: 0 0 320px; height: 420px; border-radius: 24px; overflow: hidden; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 4px solid #fff;
+            transform: rotate(-2deg); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .creator-image-wrapper:hover { transform: rotate(0deg) scale(1.03); box-shadow: 0 20px 45px rgba(0,0,0,0.2); }
+        
+        .creator-info { flex: 1; }
+        .creator-name { font-size: 2.5rem; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; letter-spacing: -1px;}
+        .verified-creator { color: var(--primary-blue); font-size: 1.8rem; }
+        .verified-fixer { color: var(--fixer-purple); font-size: 1.8rem; }
+        
+        .creator-role { 
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; display: inline-block; 
+            padding: 8px 16px; border-radius: 50px; background: rgba(255,255,255,0.8);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .role-dave { color: var(--primary-blue); border: 1px solid rgba(56, 122, 255, 0.2); }
+        .role-mak { color: var(--fixer-purple); border: 1px solid rgba(142, 45, 226, 0.2); }
+
+        .creator-bio { font-size: 1.15rem; color: #444; line-height: 1.8; white-space: pre-wrap; font-weight: 400;}
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) { 
+            .creator-card { flex-direction: column; text-align: center; gap: 30px; padding: 20px;}
+            .creator-image-wrapper { width: 100%; max-width: 320px; height: auto; aspect-ratio: 3/4; transform: rotate(0); margin: 0 auto;}
+            .creator-name { justify-content: center; font-size: 2rem;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <header>
+        <div class="nav-container">
+            <a href="/" class="brand">
+                <img src="logo.jpg" alt="Logo" class="logo-img">
+                <div class="logo-text">haunted<span>.</span>rock</div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/ai" class="icon-btn" style="color:var(--primary-blue); font-weight:700;"><i class="ph-fill ph-sparkle"></i> rock.ai</a></li>
+                    <li><a href="/about" class="active">About</a></li>
+                    <li><a href="/">Home Page</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="profile-wrapper" id="headerAvatarWrapper">
+                    <img id="userAvatar" src="" class="profile-img" alt="Profile">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <h1 class="page-title">The Creators</h1>
+
+        <section class="glass-panel creator-card">
+            <div class="creator-image-wrapper">
+                <img src="David.jpg" alt="Haunted Rock"> 
+            </div>
+            <div class="creator-info">
+                <h2 class="creator-name">Haunted Rock <i class="ph-fill ph-seal-check verified-creator" title="Creator"></i></h2>
+                <span class="creator-role role-dave">The Visionary & Traveler</span>
+                <p class="creator-bio">My name is Dave and I'm an American traveler and songwriter. All the songs, poems, and stories on this site have come to me in strange locations and circumstances, and the pictures and videos that accompany them are places that I've been to. I hope you will find something here that is meaningful to you. Enjoy your stay and safe travels.</p>
+            </div>
+        </section>
+
+        <section class="glass-panel creator-card" style="flex-direction: row-reverse;">
+            <div class="creator-image-wrapper" style="transform: rotate(2deg);">
+                <img src="M1rMak.jpg" alt="M1rMak">
+            </div>
+            <div class="creator-info">
+                <h2 class="creator-name">M1rMak <i class="ph-fill ph-wrench verified-fixer" title="Fixer"></i></h2>
+                <span class="creator-role role-mak">The Creator & Developer</span>
+                <p class="creator-bio">Hello! I’m M1rMak. I developed this website for my teacher, Mr. David, because he didn’t like his main website called hauntedrock.com. I am the creator and lead developer of the Haunted Rock platform. I’m responsible for the technical implementation and for turning even the craziest ideas into code — transforming vision into a working ecosystem. Always move forward!</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Проверка авторизации
+        if (!localStorage.getItem('haunted_user')) {
+            window.location.href = '/reg';
+        }
+
+        const userName = localStorage.getItem('haunted_user');
+        let userAvatar = localStorage.getItem('haunted_avatar') || `https://ui-avatars.com/api/?name=${userName}&background=random&color=fff&bold=true`;
+        
+        // Подгружаем актуальную аватарку пользователя для шапки профиля
+        async function fetchMyAvatar() {
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                const me = users.find(u => u.username === userName);
+                if (me && me.avatar) {
+                    userAvatar = me.avatar;
+                    localStorage.setItem('haunted_avatar', userAvatar);
+                }
+                document.getElementById('userAvatar').src = userAvatar;
+            } catch (error) { 
+                console.error("Avatar fetch error", error); 
+                document.getElementById('userAvatar').src = userAvatar;
+            }
+        }
+        
+        fetchMyAvatar();
+    </script>
+</body>
+</html>

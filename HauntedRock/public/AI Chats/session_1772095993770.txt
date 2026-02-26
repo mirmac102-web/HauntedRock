@@ -1,0 +1,17 @@
+User (MrDave): Hey
+rock.ai: Hey Dave! What's up? Need help with something on haunted.rock?
+---
+User (MrDave): How to cook chiken?
+rock.ai: Here’s a quick and foolproof way to cook chicken:
+
+**Pan-Seared Chicken Breast**
+1. **Prep**: Pat the chicken dry with paper towels. Season both sides with salt, pepper, and any herbs/spices you like (garlic powder, paprika, thyme, etc.).
+2. **Heat**: Heat a skillet over medium-high heat. Add a bit of oil (olive or avocado oil works great).
+3. **Cook**: Place the chicken in the hot skillet. Cook for 6-7 minutes on one side without moving it (this creates a nice sear).
+4. **Flip**: Flip the chicken and cook for another 5-6 minutes, or until the internal temperature reaches 165°F (74°C).
+5. **Rest**: Let it rest for 5 minutes before slicing to keep it juicy.
+
+**Pro Tip**: For extra flavor, deglaze the pan with a splash of chicken broth, lemon juice, or white wine after cooking, and drizzle the sauce over the chicken.
+
+Easy, right? What’s your go-to seasoning?
+---
