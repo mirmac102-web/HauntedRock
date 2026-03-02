@@ -1,17 +1,13 @@
 {
   "name": "hauntedrock",
   "version": "1.0.0",
-  "description": "",
+  "description": "Haunted Rock Server",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "@supabase/supabase-js": "^2.97.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
     "svg-captcha": "^1.4.0"
