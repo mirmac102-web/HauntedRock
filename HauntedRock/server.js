@@ -123,6 +123,28 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// --- API: ОБНОВЛЕНИЕ АВАТАРКИ ---
+app.post('/api/avatar', async (req, res) => {
+    const { username, avatar } = req.body;
+
+    if (!username || !avatar) {
+        return res.status(400).json({ success: false, message: 'Username and avatar are required' });
+    }
+
+    // Говорим Supabase: обнови колонку avatar у конкретного пользователя
+    const { error } = await supabase
+        .from('users')
+        .update({ avatar: avatar })
+        .eq('username', username);
+
+    if (error) {
+        console.error("❌ Ошибка сохранения аватарки:", error.message);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+
+    res.json({ success: true, message: 'Avatar updated successfully!' });
+});
+
 // --- API: ЧАТ С ИИ ---
 app.post('/api/chat', async (req, res) => {
     const { message, history, username } = req.body;
@@ -162,3 +184,4 @@ app.post('/api/chat', async (req, res) => {
 app.listen(PORT, () => { 
     console.log(`🚀 Haunted Rock Server is LIVE on port ${PORT}`); 
 });
+
