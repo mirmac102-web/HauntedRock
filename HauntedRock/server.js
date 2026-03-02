@@ -98,16 +98,19 @@ app.get('/api/captcha', (req, res) => {
 
 // --- API: ВХОД (LOGIN) ---
 app.post('/api/login', async (req, res) => {
-    const { identifier, password, captcha } = req.body;
+    const loginName = req.body.identifier || req.body.username;
+    const password = req.body.password;
+    const captcha = req.body.captcha;
     
     if (!captchaStore[req.ip] || captchaStore[req.ip] !== captcha.toLowerCase()) {
         return res.json({ success: false, message: 'Wrong Captcha!' });
     }
 
+    // Ищем пользователя только по username без лишних кавычек
     const { data: user, error } = await supabase
         .from('users')
         .select('*')
-        .or(`email.eq."${identifier}",username.eq."${identifier}"`)
+        .eq('username', loginName)
         .eq('password', password)
         .single();
 
@@ -115,6 +118,7 @@ app.post('/api/login', async (req, res) => {
         delete captchaStore[req.ip];
         res.json({ success: true, username: user.username });
     } else {
+        console.error("❌ Ошибка входа для:", loginName, "| Детали из БД:", error?.message);
         res.json({ success: false, message: 'Invalid credentials or password' });
     }
 });
@@ -158,4 +162,3 @@ app.post('/api/chat', async (req, res) => {
 app.listen(PORT, () => { 
     console.log(`🚀 Haunted Rock Server is LIVE on port ${PORT}`); 
 });
-
