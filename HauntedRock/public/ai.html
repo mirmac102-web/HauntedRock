@@ -6,7 +6,6 @@
     <title>rock.ai - Chat</title>
     
     <script>
-        // Проверка авторизации
         if (!localStorage.getItem('haunted_user')) window.location.href = '/reg';
     </script>
 
@@ -33,7 +32,7 @@
             display: flex; 
             flex-direction: column; 
             color: var(--dark-text); 
-            overflow: hidden; 
+            overflow: hidden; /* Полностью блокируем скролл всей страницы */
             background: var(--bg-gradient); 
         }
 
@@ -64,23 +63,22 @@
         }
         .btn-home:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
 
-        .main-container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: 900px; margin: 0 auto; position: relative; }
+        .main-container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: 900px; margin: 0 auto; position: relative; overflow: hidden; }
         
         .chat-box { 
             flex: 1; 
             padding: 40px 20px; 
             overflow-y: auto; 
+            overflow-x: hidden; /* ЖЕСТКО запрещаем скролл влево-вправо */
             display: flex; 
             flex-direction: column; 
             gap: 20px; 
-            scroll-behavior: smooth;
         }
         
         .chat-box::-webkit-scrollbar { width: 6px; }
         .chat-box::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
         
-        /* === СЕТКА СООБЩЕНИЙ === */
-        .message-row { display: flex; align-items: flex-end; gap: 12px; width: 100%; animation: fadeIn 0.3s ease-out; }
+        .message-row { display: flex; align-items: flex-end; gap: 12px; width: 100%; animation: fadeIn 0.3s ease-out; max-width: 100%; }
         .message-row.ai { justify-content: flex-start; }
         .message-row.user { justify-content: flex-end; }
         
@@ -95,8 +93,11 @@
 
         .bubble { 
             padding: 14px 20px; border-radius: 20px; font-size: 1rem; line-height: 1.5; 
-            position: relative; word-wrap: break-word; font-weight: 400; 
-            max-width: 75%;
+            position: relative; 
+            word-wrap: break-word; 
+            word-break: break-word; /* Принудительно ломаем длинные слова */
+            font-weight: 400; 
+            max-width: calc(100% - 60px); /* Не даем пузырю вылезти за пределы экрана */
             width: fit-content;
         }
         
@@ -104,6 +105,7 @@
             background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.9); border-bottom-left-radius: 4px; 
             color: var(--dark-text); box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            overflow-x: auto; /* Разрешаем горизонтальный скролл только внутри самого пузыря ИИ, если там код */
         }
         
         .user .bubble { 
@@ -111,8 +113,8 @@
             border-bottom-right-radius: 4px; box-shadow: 0 8px 25px rgba(56, 122, 255, 0.3); 
         }
 
-        .ai .bubble pre { background: #1d1d1f; color: #fff; padding: 15px; border-radius: 12px; margin: 10px 0; overflow-x: auto; font-family: monospace; font-size: 0.9rem;}
-        .ai .bubble code { background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: var(--primary-blue);}
+        .ai .bubble pre { background: #1d1d1f; color: #fff; padding: 15px; border-radius: 12px; margin: 10px 0; overflow-x: auto; font-family: monospace; font-size: 0.9rem; max-width: 100%;}
+        .ai .bubble code { background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: var(--primary-blue); word-break: break-all;}
         .ai .bubble p { margin-bottom: 10px; }
         .ai .bubble p:last-child { margin-bottom: 0; }
         .ai .bubble ul { padding-left: 20px; margin-bottom: 10px;}
@@ -136,7 +138,6 @@
         }
         .send-btn:hover { background: #1a5cff; transform: scale(1.08) rotate(-10deg); }
         
-        /* === КНОПКА СКРОЛЛА ВНИЗ === */
         .scroll-btn {
             position: absolute;
             bottom: 100px;
@@ -159,17 +160,8 @@
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 100;
         }
-        .scroll-btn.show {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(-10px);
-        }
-        .scroll-btn:hover {
-            background: #fff;
-            color: #1a5cff;
-            transform: translateY(-15px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
+        .scroll-btn.show { opacity: 1; pointer-events: auto; transform: translateY(-10px); }
+        .scroll-btn:hover { background: #fff; color: #1a5cff; transform: translateY(-15px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
 
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--gray-text); }
         .empty-icon { font-size: 4rem; color: var(--primary-blue); margin-bottom: 20px; opacity: 0.8; animation: float 3s ease-in-out infinite;}
@@ -231,7 +223,6 @@
 
         const userName = localStorage.getItem('haunted_user');
         
-        // По умолчанию ставим твой файл user.jpg
         let userAvatar = '/user.jpg'; 
 
         async function fetchMyAvatar() {
@@ -246,7 +237,6 @@
         }
         fetchMyAvatar();
 
-        // Показ и скрытие кнопки скролла
         chatBox.addEventListener('scroll', () => {
             const distanceFromBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight;
             if (distanceFromBottom > 150) {
@@ -256,10 +246,14 @@
             }
         });
 
-        // Функция ЖЕЛЕЗОБЕТОННОГО скролла вниз
+        // Железобетонный скролл, который больше никогда не уедет вправо
         function scrollToBottom() { 
             setTimeout(() => {
-                chatBox.scrollTop = chatBox.scrollHeight;
+                chatBox.scrollTo({
+                    top: chatBox.scrollHeight,
+                    left: 0, // ПРИНУДИТЕЛЬНО держим левый край!
+                    behavior: 'smooth'
+                });
             }, 100);
         }
 
