@@ -176,12 +176,15 @@ app.delete('/api/posts/:id', async (req, res) => {
 app.delete('/api/account', async (req, res) => {
     const { username } = req.body;
     
-    // Защита админских аккаунтов от случайного удаления через сайт
+    // Защита админских аккаунтов
     if (username === 'Haunted Rock' || username === 'M1rMak') {
         return res.json({ success: false, message: 'Admins cannot delete their accounts here.' });
     }
 
-    // Удаляем пользователя из таблицы users
+    // 1. Сначала удаляем ВСЕ посты этого пользователя (чтобы они исчезли из ленты)
+    await supabase.from('posts').delete().eq('author', username);
+
+    // 2. Теперь удаляем самого пользователя из базы
     const { error } = await supabase.from('users').delete().eq('username', username);
     
     if (error) {
@@ -294,6 +297,7 @@ app.post('/api/chat', async (req, res) => {
 app.listen(PORT, () => { 
     console.log(`🚀 Haunted Rock Server is LIVE on port ${PORT}`); 
 });
+
 
 
 
