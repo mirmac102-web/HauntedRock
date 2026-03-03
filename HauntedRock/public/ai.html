@@ -6,6 +6,7 @@
     <title>rock.ai - Chat</title>
     
     <script>
+        // Проверка авторизации
         if (!localStorage.getItem('haunted_user')) window.location.href = '/reg';
     </script>
 
@@ -65,7 +66,15 @@
 
         .main-container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: 900px; margin: 0 auto; position: relative; }
         
-        .chat-box { flex: 1; padding: 40px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth;}
+        .chat-box { 
+            flex: 1; 
+            padding: 40px 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            scroll-behavior: smooth;
+        }
         
         .chat-box::-webkit-scrollbar { width: 6px; }
         .chat-box::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
@@ -239,16 +248,20 @@
 
         // Показ и скрытие кнопки скролла
         chatBox.addEventListener('scroll', () => {
-            // Считаем расстояние от текущего положения скролла до самого низа
             const distanceFromBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight;
-            
-            // Если прокрутили вверх больше чем на 150 пикселей - показываем кнопку
             if (distanceFromBottom > 150) {
                 scrollBtn.classList.add('show');
             } else {
                 scrollBtn.classList.remove('show');
             }
         });
+
+        // Функция ЖЕЛЕЗОБЕТОННОГО скролла вниз
+        function scrollToBottom() { 
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 100);
+        }
 
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -301,14 +314,8 @@
             }
             
             chatBox.appendChild(row);
-            
-            // Автоматически скроллим вниз при новых сообщениях
-            setTimeout(scrollToBottom, 50);
+            scrollToBottom();
         }
-
-       function scrollToBottom() { 
-            // Небольшая задержка, чтобы браузер точно успел отрисовать новые пиксели текста
-            setTimeout(() => {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 100);
-        }
+    </script>
+</body>
+</html>
