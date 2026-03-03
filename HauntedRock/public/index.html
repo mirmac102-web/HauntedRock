@@ -142,7 +142,8 @@
         .menu-btn:hover { background: rgba(255, 255, 255, 0.8); transform: translateY(-2px); color: var(--primary-blue); }
         .btn-confirm { background: var(--primary-blue); color: white; border: none; }
         .btn-confirm:hover { background: #1a5cff; color: white; }
-        .btn-danger:hover { background: #fff0f0; color: #e74c3c; border-color: transparent; }
+        .btn-danger { color: #e74c3c; }
+        .btn-danger:hover { background: #fff0f0; border-color: transparent; }
         
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; color: var(--gray-text); cursor: pointer; transition: 0.2s;}
         .close-modal:hover { color: var(--dark-text); transform: scale(1.1); }
@@ -202,8 +203,11 @@
             <div class="modal-avatar-wrapper"><img id="modalAvatar" src=""></div>
             <h2 id="profileName" style="margin-bottom: 5px;">User</h2>
             <span id="profileRole" style="color:var(--gray-text); display:block; margin-bottom: 30px;">Explorer</span>
+            
             <button class="menu-btn" onclick="document.getElementById('fileInput').click()"><i class="ph ph-image"></i> Change Avatar</button>
             <button class="menu-btn" onclick="openCodeModal()"><i class="ph ph-code"></i> Enter Code</button>
+            
+            <button class="menu-btn btn-danger" onclick="deleteAccount()"><i class="ph ph-user-minus"></i> Delete Account</button>
             <button class="menu-btn btn-danger" onclick="logout()"><i class="ph ph-sign-out"></i> Log Out</button>
         </div>
     </div>
@@ -294,7 +298,7 @@
         async function loadFeed() {
             const container = document.getElementById('feedContainer');
             try {
-                // Загружаем посты и юзеров одновременно (чтобы взять аватарки авторов)
+                // Загружаем посты и юзеров одновременно
                 const [postsResponse, usersResponse] = await Promise.all([
                     fetch('/api/posts'),
                     fetch('/api/users')
@@ -309,12 +313,10 @@
 
                 container.innerHTML = '';
                 posts.forEach(post => {
-                    // Исправляем undefined дату
                     const dateObj = new Date(post.created_at);
                     const postDate = isNaN(dateObj) ? "Today" : dateObj.toLocaleDateString();
                     const postTime = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-                    // Ищем аватарку автора поста
                     const authorInfo = users.find(u => u.username === post.author);
                     const postAvatar = authorInfo && authorInfo.avatar ? authorInfo.avatar : `https://ui-avatars.com/api/?name=${post.author}&background=random&color=fff&bold=true`;
 
@@ -566,6 +568,34 @@
                     } catch (error) { alert("Не удалось связаться с сервером"); }
                 }
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function deleteAccount() {
+            if (userName === 'Haunted Rock' || userName === 'M1rMak') {
+                alert("Создатели не могут удалить свой аккаунт через эту кнопку!");
+                return;
+            }
+
+            if (!confirm("Are you sure you want to permanently delete your account? This cannot be undone!")) return;
+            
+            try {
+                const response = await fetch('/api/account', {
+                    method: 'DELETE', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: userName })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    alert("Your account has been deleted.");
+                    localStorage.removeItem('haunted_user'); 
+                    window.location.href = '/reg'; 
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (error) { 
+                console.error("Error deleting account:", error); 
             }
         }
 
