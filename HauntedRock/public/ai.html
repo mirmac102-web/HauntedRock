@@ -306,9 +306,9 @@
             setTimeout(scrollToBottom, 50);
         }
 
-        function scrollToBottom() { 
-            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' }); 
+       function scrollToBottom() { 
+            // Небольшая задержка, чтобы браузер точно успел отрисовать новые пиксели текста
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 100);
         }
-    </script>
-</body>
-</html>
