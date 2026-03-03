@@ -70,11 +70,9 @@
         .chat-box::-webkit-scrollbar { width: 6px; }
         .chat-box::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
         
-        /* === ИСПРАВЛЕННАЯ СЕТКА СООБЩЕНИЙ === */
+        /* === СЕТКА СООБЩЕНИЙ === */
         .message-row { display: flex; align-items: flex-end; gap: 12px; width: 100%; animation: fadeIn 0.3s ease-out; }
-        /* ИИ выравнивается по левому краю */
         .message-row.ai { justify-content: flex-start; }
-        /* Пользователь выравнивается по правому краю (без кривого row-reverse) */
         .message-row.user { justify-content: flex-end; }
         
         .avatar { 
@@ -89,8 +87,8 @@
         .bubble { 
             padding: 14px 20px; border-radius: 20px; font-size: 1rem; line-height: 1.5; 
             position: relative; word-wrap: break-word; font-weight: 400; 
-            max-width: 75%; /* Пузырь не растянется на весь экран */
-            width: fit-content; /* Короткие сообщения будут маленькими */
+            max-width: 75%;
+            width: fit-content;
         }
         
         .ai .bubble { 
@@ -110,7 +108,7 @@
         .ai .bubble p:last-child { margin-bottom: 0; }
         .ai .bubble ul { padding-left: 20px; margin-bottom: 10px;}
 
-        .input-area { padding: 30px; background: transparent; }
+        .input-area { padding: 30px; background: transparent; position: relative; z-index: 10;}
         
         .input-wrapper { 
             position: relative; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -129,6 +127,41 @@
         }
         .send-btn:hover { background: #1a5cff; transform: scale(1.08) rotate(-10deg); }
         
+        /* === КНОПКА СКРОЛЛА ВНИЗ === */
+        .scroll-btn {
+            position: absolute;
+            bottom: 100px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            color: var(--primary-blue);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+        .scroll-btn.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-10px);
+        }
+        .scroll-btn:hover {
+            background: #fff;
+            color: #1a5cff;
+            transform: translateY(-15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--gray-text); }
         .empty-icon { font-size: 4rem; color: var(--primary-blue); margin-bottom: 20px; opacity: 0.8; animation: float 3s ease-in-out infinite;}
         
@@ -166,6 +199,10 @@
             </div>
         </div>
 
+        <button id="scrollBtn" class="scroll-btn" onclick="scrollToBottom()" title="Scroll to bottom">
+            <i class="ph-bold ph-arrow-down"></i>
+        </button>
+
         <div class="input-area">
             <form class="input-wrapper" id="chatForm">
                 <input type="text" id="userInput" placeholder="Message rock.ai..." autocomplete="off">
@@ -179,14 +216,14 @@
         const emptyState = document.getElementById('emptyState');
         const chatForm = document.getElementById('chatForm');
         const userInput = document.getElementById('userInput');
+        const scrollBtn = document.getElementById('scrollBtn');
         const chatId = 'session_' + Date.now();
         let history = [];
 
         const userName = localStorage.getItem('haunted_user');
-        let userAvatar = localStorage.getItem('haunted_avatar');
-        if (!userAvatar || userAvatar.trim() === '') {
-            userAvatar = `https://ui-avatars.com/api/?name=${userName}&background=random&color=fff&bold=true`;
-        }
+        
+        // По умолчанию ставим твой файл user.jpg
+        let userAvatar = '/user.jpg'; 
 
         async function fetchMyAvatar() {
             try {
@@ -199,6 +236,19 @@
             } catch (error) { console.error("Avatar fetch error", error); }
         }
         fetchMyAvatar();
+
+        // Показ и скрытие кнопки скролла
+        chatBox.addEventListener('scroll', () => {
+            // Считаем расстояние от текущего положения скролла до самого низа
+            const distanceFromBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight;
+            
+            // Если прокрутили вверх больше чем на 150 пикселей - показываем кнопку
+            if (distanceFromBottom > 150) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
 
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -247,12 +297,13 @@
                 row.innerHTML = `<div class="avatar"><i class="ph-fill ph-sparkle"></i></div><div class="bubble">${formattedText}</div>`;
             } else {
                 const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
-                // ИЗМЕНЕНИЕ: Сначала идет текст, ПОТОМ аватарка. Так Flexbox сам поставит картинку в правый край.
                 row.innerHTML = `<div class="bubble">${safeText}</div><img src="${userAvatar}" class="avatar" alt="User">`;
             }
             
             chatBox.appendChild(row);
-            scrollToBottom();
+            
+            // Автоматически скроллим вниз при новых сообщениях
+            setTimeout(scrollToBottom, 50);
         }
 
         function scrollToBottom() { 
