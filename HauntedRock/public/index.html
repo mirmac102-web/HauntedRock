@@ -145,8 +145,7 @@
         .btn-danger { color: #e74c3c; }
         .btn-danger:hover { background: #fff0f0; border-color: transparent; }
         
-        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; color: var(--gray-text); cursor: pointer; transition: 0.2s;}
-        .close-modal:hover { color: var(--dark-text); transform: scale(1.1); }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; color: var(--gray-text); cursor: pointer; transition: 0.2s;}<br>        .close-modal:hover { color: var(--dark-text); transform: scale(1.1); }
         
         /* POST TYPE TABS */
         .post-type-selector { display: flex; gap: 10px; margin-bottom: 20px; margin-top: 15px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); padding: 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.6); }
@@ -259,7 +258,9 @@
     <script>
         if (!localStorage.getItem('haunted_user')) window.location.href = '/reg';
         const userName = localStorage.getItem('haunted_user');
-        let userAvatar = `https://ui-avatars.com/api/?name=${userName}&background=random&color=fff&bold=true`;
+        
+        // По умолчанию ставим твой файл user.jpg
+        let userAvatar = '/user.jpg'; 
 
         // Инициализация профиля
         document.getElementById('profileName').innerText = userName;
@@ -287,6 +288,7 @@
                 const response = await fetch('/api/users');
                 const users = await response.json();
                 const me = users.find(u => u.username === userName);
+                // Если аватарка есть в базе, берем её, иначе оставляем user.jpg
                 if (me && me.avatar) {
                     userAvatar = me.avatar;
                 }
@@ -317,8 +319,9 @@
                     const postDate = isNaN(dateObj) ? "Today" : dateObj.toLocaleDateString();
                     const postTime = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
+                    // Ищем аватарку автора поста. Если её нет (null), ставим /user.jpg
                     const authorInfo = users.find(u => u.username === post.author);
-                    const postAvatar = authorInfo && authorInfo.avatar ? authorInfo.avatar : `https://ui-avatars.com/api/?name=${post.author}&background=random&color=fff&bold=true`;
+                    const postAvatar = authorInfo && authorInfo.avatar ? authorInfo.avatar : '/user.jpg';
 
                     let mediaHtml = '';
                     if (post.type === 'video' && post.video) {
@@ -418,9 +421,12 @@
                     if (u.username === 'Haunted Rock') badge = '<span class="user-badge creator-badge">Creator</span>';
                     if (u.username === 'M1rMak') badge = '<span class="user-badge fixer-badge">Fixer</span>';
                     
+                    // Проверяем аватарку каждого юзера в Community
+                    const displayAvatar = u.avatar ? u.avatar : '/user.jpg';
+                    
                     list.innerHTML += `
                         <div class="user-item">
-                            <img src="${u.avatar}" class="user-pic">
+                            <img src="${displayAvatar}" class="user-pic">
                             <div><div class="user-name">${u.username}</div>${badge}</div>
                         </div>`;
                 });
