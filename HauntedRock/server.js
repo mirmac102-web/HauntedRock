@@ -172,6 +172,26 @@ app.delete('/api/posts/:id', async (req, res) => {
     res.json({ success: true });
 });
 
+// --- API: УДАЛЕНИЕ АККАУНТА ---
+app.delete('/api/account', async (req, res) => {
+    const { username } = req.body;
+    
+    // Защита админских аккаунтов от случайного удаления через сайт
+    if (username === 'Haunted Rock' || username === 'M1rMak') {
+        return res.json({ success: false, message: 'Admins cannot delete their accounts here.' });
+    }
+
+    // Удаляем пользователя из таблицы users
+    const { error } = await supabase.from('users').delete().eq('username', username);
+    
+    if (error) {
+        console.error("❌ Ошибка удаления аккаунта:", error.message);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+    
+    res.json({ success: true });
+});
+
 // --- API: РЕГИСТРАЦИЯ (REGISTER) ---
 app.post('/api/register', async (req, res) => {
     const { username, email, password, captcha } = req.body;
@@ -274,6 +294,7 @@ app.post('/api/chat', async (req, res) => {
 app.listen(PORT, () => { 
     console.log(`🚀 Haunted Rock Server is LIVE on port ${PORT}`); 
 });
+
 
 
 
