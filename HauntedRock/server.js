@@ -123,6 +123,55 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// --- API: ЛАЙКИ ---
+app.post('/api/posts/:id/like', async (req, res) => {
+    const postId = req.params.id;
+    const { username } = req.body;
+
+    const { data: post } = await supabase.from('posts').select('likes').eq('id', postId).single();
+    if (!post) return res.json({ success: false });
+
+    let likes = post.likes || [];
+    let isLiked = false;
+
+    if (likes.includes(username)) {
+        likes = likes.filter(u => u !== username); // Убираем лайк
+    } else {
+        likes.push(username); // Ставим лайк
+        isLiked = true;
+    }
+
+    await supabase.from('posts').update({ likes }).eq('id', postId);
+    res.json({ success: true, isLiked, likesCount: likes.length });
+});
+
+// --- API: КОММЕНТАРИИ ---
+app.post('/api/posts/:id/comment', async (req, res) => {
+    const postId = req.params.id;
+    const { author, text } = req.body;
+
+    const { data: user } = await supabase.from('users').select('avatar').eq('username', author).single();
+    const avatar = user?.avatar || `https://ui-avatars.com/api/?name=${author}&background=random&color=fff`;
+
+    const newComment = { author, text, avatar };
+    const { data: post } = await supabase.from('posts').select('comments').eq('id', postId).single();
+    
+    let comments = post.comments || [];
+    comments.push(newComment);
+
+    await supabase.from('posts').update({ comments }).eq('id', postId);
+    res.json({ success: true });
+});
+
+// --- API: УДАЛЕНИЕ ПОСТОВ ---
+app.delete('/api/posts/:id', async (req, res) => {
+    const { author } = req.body;
+    if (author !== 'Haunted Rock' && author !== 'M1rMak') return res.status(403).json({ success: false });
+    
+    await supabase.from('posts').delete().eq('id', req.params.id);
+    res.json({ success: true });
+});
+
 // --- API: РЕГИСТРАЦИЯ (REGISTER) ---
 app.post('/api/register', async (req, res) => {
     const { username, email, password, captcha } = req.body;
@@ -225,5 +274,6 @@ app.post('/api/chat', async (req, res) => {
 app.listen(PORT, () => { 
     console.log(`🚀 Haunted Rock Server is LIVE on port ${PORT}`); 
 });
+
 
 
