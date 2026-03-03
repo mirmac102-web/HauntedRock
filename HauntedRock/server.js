@@ -123,6 +123,47 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// --- API: РЕГИСТРАЦИЯ (REGISTER) ---
+app.post('/api/register', async (req, res) => {
+    const { username, email, password, captcha } = req.body;
+    
+    // 1. Проверяем капчу
+    if (!captchaStore[req.ip] || captchaStore[req.ip] !== (captcha || '').toLowerCase()) {
+        return res.json({ success: false, message: 'Wrong Captcha!' });
+    }
+
+    // 2. Проверяем, не занят ли уже такой ник (чтобы не было клонов)
+    const { data: existingUser } = await supabase
+        .from('users')
+        .select('username')
+        .eq('username', username)
+        .single();
+
+    if (existingUser) {
+        return res.json({ success: false, message: 'Username is already taken!' });
+    }
+
+    // 3. Создаем нового пользователя в базе Supabase
+    const { error } = await supabase
+        .from('users')
+        .insert([{ 
+            username: username, 
+            email: email || null, 
+            password: password, 
+            is_admin: false, // Обычные юзеры не админы
+            avatar: `https://ui-avatars.com/api/?name=${username}&background=random&color=fff&bold=true` // Ставим стандартную аватарку сразу
+        }]);
+
+    if (error) {
+        console.error("❌ Ошибка при регистрации:", error.message);
+        return res.json({ success: false, message: 'Database error: ' + error.message });
+    }
+
+    // Успех!
+    delete captchaStore[req.ip];
+    res.json({ success: true, message: 'Account created successfully!' });
+});
+
 // --- API: ОБНОВЛЕНИЕ АВАТАРКИ ---
 app.post('/api/avatar', async (req, res) => {
     const { username, avatar } = req.body;
@@ -184,4 +225,5 @@ app.post('/api/chat', async (req, res) => {
 app.listen(PORT, () => { 
     console.log(`🚀 Haunted Rock Server is LIVE on port ${PORT}`); 
 });
+
 
